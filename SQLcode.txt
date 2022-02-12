@@ -1,0 +1,71 @@
+Question Set #1 Question #1 [slide #1]
+
+WITH table_1 AS (
+	SELECT f.title Film_title,
+       	       c.name film_Category,
+       	       COUNT (rental_id) Num_Times_Rented
+	FROM film f
+	JOIN film_category fc
+	ON f.film_id = fc.film_id
+	JOIN inventory i
+	ON f.film_id = i.film_id
+	JOIN rental r
+	ON i.inventory_id = r.inventory_id
+	JOIN category c
+	ON c.category_id = fc.category_id
+	GROUP BY 1,2
+	)
+
+SELECT *
+FROM table_1
+WHERE Film_category IN ('Animation', 'Children',
+			'Classics','Comedy','Family',
+			'Music')
+ORDER BY 2, 1
+
+------------------------------------------------------------------
+Question Set #2 Question #1 [Slide #2]
+SELECT DATE_PART('month',rental_date) AS Rental_Month,
+       DATE_PART('year', rental_date) AS Rental_Year,
+       st.store_id Store_id,
+       COUNT(rental_id) Count_rentals
+FROM rental r
+JOIN staff s
+ON s.staff_id = r.staff_id
+JOIN store st
+ON st.store_id = s.store_id
+GROUP BY 1,2,3
+ORDER BY 4 DESC;
+
+-------------------------------------------------------------------
+Question Set #2 Question #2 [Slide #3]
+SELECT CONCAT (c.first_name,' ',c.last_name) Cust_name,
+       DATE_TRUNC ('month', payment_date) Pay_month_year,
+       COUNT (payment_id) Times_month,
+       SUM (amount) Amount_per_month
+FROM customer c
+JOIN payment p
+ON c.customer_id = p.customer_id
+GROUP BY 1, 2
+ORDER BY 4 DESC
+LIMIT 10;
+--------------------------------------------------------------------
+Question Set #1 Question #2 [Slide #4]
+
+WITH table_2 AS
+(SELECT f.title Film_title,
+	   c.name Category,
+	   f.rental_duration Rental_duration,
+	   NTILE (4) OVER (ORDER BY rental_duration ) Quartile
+FROM film f
+JOIN film_category fc
+ON f.film_id = fc.film_id
+JOIN category c
+ON c.category_id = fc.category_id
+)
+
+SELECT *
+FROM table_2
+WHERE Category IN ('Animation', 'Children',
+		   'Classics','Comedy','Family',
+		   'Music')
